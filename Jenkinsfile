@@ -1,22 +1,26 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER = '"C:\Program Files\Docker\Docker\resources\bin\docker"'
+    }
+
     stages {
-        stage('Checkout') {
+        stage('Build Docker Image') {
             steps {
-                git 'https://github.com/Vishal0601-10/pipelineautomation.git'
+                bat '%DOCKER% build -t python-app .'
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Run Tests Inside Docker') {
             steps {
-                sh 'pip install -r requirements.txt'
+                bat '%DOCKER% run --rm python-app pytest'
             }
         }
 
-        stage('Run Tests') {
+        stage('Run Application') {
             steps {
-                sh 'pytest'
+                bat '%DOCKER% run --rm python-app'
             }
         }
     }
